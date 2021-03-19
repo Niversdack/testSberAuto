@@ -87,7 +87,7 @@ func (stringService) Fix(s string) (string, error) {
 		switch r {
 		case openParenthesis, openCurly, openSquare:
 			list = append(list, r)
-			result = result + r
+			result += r
 		case closeParenthesis:
 			list, tmp = FixBracked(list, openParenthesis, closeParenthesis)
 			result += tmp
@@ -108,10 +108,10 @@ func FixBracked(list []string, bracketOpen string, bracketClose string) ([]strin
 	if len(list) > 0 {
 		if list[len(list)-1] != bracketOpen {
 			list = append(list, bracketOpen)
-			result = result + bracketOpen
+			result += bracketOpen
 		}
 		list = list[:len(list)-1]
-		result = result + bracketClose
+		result += bracketClose
 	} else {
 		list = append(list, bracketOpen)
 		result += bracketOpen
@@ -150,7 +150,7 @@ func makeValidateEndpoint(svc StringService) endpoint.Endpoint {
 		req := request.(validateRequest)
 		v, err := svc.Validate(req.S)
 		if err != nil {
-			if err==ErrBadString{
+			if err == ErrBadString {
 				return validateResponse{req.S, err.Error()}, nil
 			}
 			return validateResponse{v, err.Error()}, nil
@@ -165,7 +165,7 @@ func makeFixEndpoint(svc StringService) endpoint.Endpoint {
 		req := request.(fixRequest)
 		v, err := svc.Fix(req.S)
 		if err != nil {
-			return fixResponse{req.S,err.Error()}, nil
+			return fixResponse{req.S, err.Error()}, nil
 		}
 
 		return fixResponse{v, ""}, nil
@@ -200,6 +200,7 @@ func recordMetrics() {
 		}
 	}()
 }
+
 var (
 	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "myapp_processed_ops_total",
@@ -210,6 +211,7 @@ var (
 		Help: "The total number requests",
 	})
 )
+
 func decodeUppercaseRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request validateRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
