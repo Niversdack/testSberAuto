@@ -50,12 +50,12 @@ func (stringService) Validate(s string) (string, error) {
 				return err.Error(), nil
 			}
 		case closeCurly:
-			list, err = ValidateBracked(list, openParenthesis)
+			list, err = ValidateBracked(list, closeCurly)
 			if err != nil {
 				return err.Error(), nil
 			}
 		case closeSquare:
-			list, err = ValidateBracked(list, openParenthesis)
+			list, err = ValidateBracked(list, closeSquare)
 			if err != nil {
 				return err.Error(), nil
 			}
@@ -190,7 +190,7 @@ func main() {
 	http.Handle("/metrics", promhttp.Handler())
 	http.Handle("/validate", validateHandler)
 	http.Handle("/fix", countHandler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8000", nil))
 }
 func recordMetrics() {
 	go func() {
