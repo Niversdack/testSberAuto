@@ -101,6 +101,19 @@ func (stringService) Fix(s string) (string, error) {
 			return "", ErrBadString
 		}
 	}
+	if len(list) > 0 {
+		for _, s2 := range list {
+			switch s2 {
+			case openParenthesis:
+				result += closeParenthesis
+			case openCurly:
+				result += closeCurly
+			case openSquare:
+				list = append(list, s2)
+				result += closeSquare
+			}
+		}
+	}
 	return result, nil
 }
 func FixBracked(list []string, bracketOpen string, bracketClose string) ([]string, string) {
