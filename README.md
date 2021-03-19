@@ -27,9 +27,10 @@ added customs:
 
 ### spec.json - спецификация API
 
+[Схема сервисов и клиентский сценарий](
+https://miro.com/welcomeonboard/WstG93ER9qvPN0ZEoRWl0xMqe45CaKnQ9CjY6MPPS2hCTIcySinVaMa4MBhMQUzp 
+"Miro Scheme"
+)
 
 
-[https://miro.com/welcomeonboard/WstG93ER9qvPN0ZEoRWl0xMqe45CaKnQ9CjY6MPPS2hCTIcySinVaMa4MBhMQUzp][Схема сервисов]
 
-
-[Схема сервисов]: https://miro.com/welcomeonboard/WstG93ER9qvPN0ZEoRWl0xMqe45CaKnQ9CjY6MPPS2hCTIcySinVaMa4MBhMQUzp
