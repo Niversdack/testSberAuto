@@ -45,17 +45,17 @@ func (stringService) Validate(s string) (string, error) {
 		case openParenthesis, openCurly, openSquare:
 			list = append(list, r)
 		case closeParenthesis:
-			list, err = ValidateBracked(list, openParenthesis)
+			err = ValidateBracked(&list, openParenthesis)
 			if err != nil {
 				return err.Error(), nil
 			}
 		case closeCurly:
-			list, err = ValidateBracked(list, openCurly)
+			err = ValidateBracked(&list, openCurly)
 			if err != nil {
 				return err.Error(), nil
 			}
 		case closeSquare:
-			list, err = ValidateBracked(list, openSquare)
+			err = ValidateBracked(&list, openSquare)
 			if err != nil {
 				return err.Error(), nil
 			}
@@ -69,12 +69,14 @@ func (stringService) Validate(s string) (string, error) {
 	}
 	return "Not Balanced", nil
 }
-func ValidateBracked(list []string, bracketOpen string) ([]string, error) {
-	if list[len(list)-1] != bracketOpen {
-		return list, errors.New("Not Balanced")
+func ValidateBracked(list *[]string, bracketOpen string) error {
+	stack := *list
+	if stack[len(stack)-1] == bracketOpen {
+		*list = stack[:len(stack)-1]
+		return nil
 	}
-	list = list[:len(list)-1]
-	return list, nil
+
+	return errors.New("Not Balanced")
 }
 
 func (stringService) Fix(s string) (string, error) {
@@ -83,20 +85,17 @@ func (stringService) Fix(s string) (string, error) {
 	result := ""
 
 	for _, r := range a {
-		tmp := ""
+
 		switch r {
 		case openParenthesis, openCurly, openSquare:
 			list = append(list, r)
 			result += r
 		case closeParenthesis:
-			list, tmp = FixBracked(list, openParenthesis, closeParenthesis)
-			result += tmp
+			result += FixBracked(&list, openParenthesis, closeParenthesis)
 		case closeCurly:
-			list, tmp = FixBracked(list, openCurly, closeCurly)
-			result += tmp
+			result += FixBracked(&list, openCurly, closeCurly)
 		case closeSquare:
-			list, tmp = FixBracked(list, openSquare, closeSquare)
-			result += tmp
+			result += FixBracked(&list, openSquare, closeSquare)
 		default:
 			return "", ErrBadString
 		}
@@ -115,21 +114,22 @@ func (stringService) Fix(s string) (string, error) {
 	}
 	return result, nil
 }
-func FixBracked(list []string, bracketOpen string, bracketClose string) ([]string, string) {
+func FixBracked(list *[]string, bracketOpen string, bracketClose string) string {
 	result := ""
-	if len(list) > 0 {
-		if list[len(list)-1] != bracketOpen {
-			list = append(list, bracketOpen)
+	stack := *list
+	if len(stack) > 0 {
+		if stack[len(stack)-1] != bracketOpen {
+			*list = append(stack, bracketOpen)
 			result += bracketOpen
 		}
-		list = list[:len(list)-1]
+		*list = stack[:len(stack)-1]
 		result += bracketClose
 	} else {
-		list = append(list, bracketOpen)
+		*list = append(stack, bracketOpen)
 		result += bracketOpen
 		result += bracketClose
 	}
-	return list, result
+	return result
 }
 
 // ErrEmpty is returned when an input string is empty.
