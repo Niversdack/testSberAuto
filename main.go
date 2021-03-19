@@ -109,7 +109,6 @@ func (stringService) Fix(s string) (string, error) {
 			case openCurly:
 				result += closeCurly
 			case openSquare:
-				list = append(list, s2)
 				result += closeSquare
 			}
 		}
