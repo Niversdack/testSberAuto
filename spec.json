@@ -1,0 +1,341 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Test SberAuto",
+    "description": "Спецификация для схемы сервисов",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "{server}/api/panel/{version}",
+      "variables": {
+        "server": {
+          "enum": [
+            "http://localhost",
+            "https://devuri",
+            "https://produri"
+          ],
+          "default": "http://localhost"
+        },
+        "version": {
+          "enum": [
+            "v1"
+          ],
+          "default": "v1"
+        }
+      }
+    }
+  ],
+  "components": {
+    "schemas": {
+      "ID": {
+        "type":"string",
+        "description": "ID"
+      },
+      "User": {
+        "type": "object",
+        "required": [
+          "login",
+          "password"
+        ],
+        "properties": {
+          "login": {
+            "type": "string",
+            "pattern": "^(?=.*[a-zA-Z]{1,})(?=.*[\\d]{0,})[a-zA-Z0-9]{1,15}$"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": [
+          "name",
+          "price",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "$ref":"#/components/schemas/ID"
+          },
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "currency",
+            "minimum": 0
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Authorization": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "Authorization": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Авторизация"
+    },
+    {
+      "name": "Payment",
+      "description": "Платежные системы"
+    },
+    {
+      "name": "Products",
+      "description": "Методы для работы с товарами"
+    },
+    {
+      "name": "AdminPanel"
+    }
+  ],
+  "paths": {
+    "/payment/{OrderID}": {
+      "post": {
+        "tags": ["Payment"],
+        "description": "Оплата заказа",
+        "operationId": "PaymnetOrder",
+        "parameters": [
+          {
+            "description": "ID заказа",
+            "name": "OrderID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ID"
+            }
+          }
+        ],
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                "type":"string",
+                "description": "Токен Платежной системы"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/order": {
+      "post": {
+        "tags": ["Products"],
+        "description": "Создание заказа",
+        "operationId": "CreateOrder",
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                "type":"array",
+                "items":{
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": ["Auth"],
+        "description": "Авторизация",
+        "operationId": "Login",
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                  "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/reg": {
+      "post": {
+        "tags": ["Auth"],
+        "description": "Регистрация",
+        "operationId": "CreateUser",
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                  "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/product/{ProductID}": {
+      "delete": {
+        "tags": ["AdminPanel"],
+        "description":"Удаление продукта",
+        "operationId": "DeleteProduct",
+        "parameters": [
+          {
+            "description": "ID продукта",
+            "name": "ProductID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ID"
+            }
+          }
+        ],
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                  "$ref": "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "put": {
+        "tags": ["AdminPanel"],
+        "description":"Редактирование продукта",
+        "operationId": "UpdateProduct",
+        "parameters": [
+          {
+            "description": "ID продукта",
+            "name": "ProductID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ID"
+            }
+          }
+        ],
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                  "$ref": "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/Product"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/product": {
+      "post": {
+        "tags": [
+          "AdminPanel"
+        ],
+        "description":"Добавить новый товар или услугу",
+        "operationId": "CreateProduct",
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                  "$ref": "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400":{
+            "description": "BadRequest"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "AdminPanel",
+          "Products"
+        ],
+        "description": "Получить все продукты(услуги)",
+        "operationId": "GetProducts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type":"array",
+                  "items":{
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404":{
+            "description": "NotFound"
+          }
+        }
+      }
+    }
+  }
+}
