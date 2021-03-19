@@ -50,12 +50,12 @@ func (stringService) Validate(s string) (string, error) {
 				return err.Error(), nil
 			}
 		case closeCurly:
-			list, err = ValidateBracked(list, closeCurly)
+			list, err = ValidateBracked(list, openCurly)
 			if err != nil {
 				return err.Error(), nil
 			}
 		case closeSquare:
-			list, err = ValidateBracked(list, closeSquare)
+			list, err = ValidateBracked(list, openSquare)
 			if err != nil {
 				return err.Error(), nil
 			}
